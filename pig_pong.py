@@ -33,6 +33,8 @@ class Player2(GameSprite):
             self.rect.y+=self.speed
 class Ball(GameSprite):
     def update(self):
+        global score1
+        global score2
         global ball
         global reket1
         global reket2
@@ -42,7 +44,14 @@ class Ball(GameSprite):
             self.speed_y*=-1
         if sprite.collide_rect(ball, reket1) or sprite.collide_rect(ball, reket2):
             self.speed_x*=-1
-        if self.rect.x<1 or self.rect.x > 1279:
+        if self.rect.x<1:
+            shot.play()
+            score2 += 1
+            self.rect.x = 615
+            self.rect.y = 335
+        if self.rect.x > 1279:
+            shot.play()
+            score1 += 1
             self.rect.x = 615
             self.rect.y = 335
 #Игровая сцена:
@@ -53,24 +62,25 @@ window.fill(bg)
 
 #переменные
 lost = 0
-score = 0
+score1 = 0
+score2 = 0
 finish = False
 run = True
 clock = time.Clock()
-ball_image = 'ball.png'
+ball_image = 'tennis_PNG10393.png'
 #создание спрайтов
 reket1 = Player1('rocket.png', 15, 150, 5, 250, 5)
 reket2 = Player2('rocket.png', 15, 150, 1260, 250, 5)
 ball = Ball(ball_image, 50, 50, 615, 335, 8) 
 #музыка
-#mixer.init()
-#mixer.music.load('space.ogg')
+mixer.init()
+#mixer.music.load('The Only Thing They Fear Is You (Brutal 8-bit Remix) Doom Eternal OST (320  kbps) (1).ogg')
 #mixer.music.play()
-#shot = mixer.Sound('fire.ogg')
+shot = mixer.Sound('tennis_shot.ogg')
 #шрифты
 font.init()
-player1_score = font.SysFont('Arial', 70).render('0', 1, (255,0,255))
-player2_score = font.SysFont('Arial', 70).render('0', 1, (255,0,255))
+player1_score = font.SysFont('Arial', 70).render(str(score1), 1, (255,0,255))
+player2_score = font.SysFont('Arial', 70).render(str(score2), 1, (255,0,255))
 win = font.SysFont('Arial', 70).render('YOU WIN', 1, (0,255,0))
 lose = font.SysFont('Arial', 70).render('GAME OVER', 1, (255,0,0))
 
@@ -79,8 +89,10 @@ while run:
         if e.type == QUIT:
             run = False
     window.fill(bg)
+    player1_score = font.SysFont('Arial', 70).render(str(score1), 1, (255,0,255))
+    player2_score = font.SysFont('Arial', 70).render(str(score2), 1, (255,0,255))
     window.blit(player1_score,(15,5))
-    window.blit(player1_score,(1180,5))
+    window.blit(player2_score,(1180,5))
     if not(finish):
         reket1.reset()
         reket1.update()
@@ -88,5 +100,13 @@ while run:
         reket2.update()
         ball.update()
         ball.reset()
+        if score1 == 10:
+            finish = True
+            score1 = 'Win!'
+            score2 = 'Lose!'
+        if score2 == 10:
+            finish = True
+            score1 = 'Lose!'
+            score2 = 'Win!'
     display.update()
     clock.tick(60)
